@@ -64,7 +64,7 @@ bool MyThroughputMeteringChannel::initializeChannel(int stage) {
 				 this->out_vectors.insert(std::make_pair<const char*,cOutVector*> ("p",new cOutVector(n.str().c_str())));
 				 break;
 			 case 'b': // current bandwidth
-				 n << "current bandwidth from " << this->getSourceGate()->getOwnerModule()->getFullPath();
+				 n << "CurrentBandwidth from " << this->getSourceGate()->getOwnerModule()->getFullPath();
 				 this->out_vectors.insert(std::make_pair<const char*,cOutVector*> ("b",new cOutVector(n.str().c_str())));
 				 break;
 			 case 'u': // current channel utilization (%)
@@ -76,7 +76,7 @@ bool MyThroughputMeteringChannel::initializeChannel(int stage) {
 				 this->out_vectors.insert(std::make_pair<const char*,cOutVector*> ("P",new cOutVector(n.str().c_str())));
 				 break;
 			 case 'B': // average bandwidth on [0,now)
-				 n << "average bandwidth from " << this->getSourceGate()->getOwnerModule()->getFullPath();
+				 n << "AverageBandwidth from " << this->getSourceGate()->getOwnerModule()->getFullPath();
 				 this->out_vectors.insert(std::make_pair<const char*,cOutVector*> ("B",new cOutVector(n.str().c_str())));
 				 break;
 			 case 'U': // average channel utilization (%) on [0,now)
@@ -90,12 +90,34 @@ bool MyThroughputMeteringChannel::initializeChannel(int stage) {
 
 	return false;
 }
+#if OMNETPP_VERSION>0x0400
+void MyThroughputMeteringChannel::processMessage(cMessage *msg, simtime_t t, result_t& result)
+{
+    cDatarateChannel::processMessage(msg, t,result);
+    if (dynamic_cast<cPacket*>(msg)) {
+		// count packets and bits
+		numPackets++;
+		numBits += ((cPacket*)msg)->getBitLength();
 
+		// packet should be counted to new interval
+		if (intvlNumPackets >= batchSize || t-intvlStartTime >= maxInterval)
+			beginNewInterval(t);
+
+		intvlNumPackets++;
+		intvlNumBits += ((cPacket*)msg)->getBitLength();
+		intvlLastPkTime = t;
+
+		// update display string
+		updateDisplay();
+    }
+}
+#else
 bool MyThroughputMeteringChannel::deliver(cMessage *msg, simtime_t t)
 {
     bool ret = cDatarateChannel::deliver(msg, t);
 
     if (dynamic_cast<cPacket*>(msg)) {
+
 		// count packets and bits
 		numPackets++;
 		numBits += ((cPacket*)msg)->getBitLength();
@@ -113,6 +135,7 @@ bool MyThroughputMeteringChannel::deliver(cMessage *msg, simtime_t t)
     }
     return ret;
 }
+#endif
 
 void MyThroughputMeteringChannel::beginNewInterval(simtime_t now) {
     simtime_t duration = now - intvlStartTime;

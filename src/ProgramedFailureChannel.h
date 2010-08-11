@@ -29,8 +29,11 @@ public:
 	ProgramedFailureChannel(const ProgramedFailureChannel& ch);
 
 	virtual ~ProgramedFailureChannel();
-
+#if OMNETPP_VERSION>0x0400
+	virtual void processMessage(cMessage *msg, simtime_t t, result_t& result);
+#else
     virtual bool deliver(cMessage *msg, simtime_t at);
+#endif
 	virtual bool initializeChannel(int stage);
 
 	void setState(LinkState state);
