@@ -3,6 +3,7 @@
 	<name>Channels</name>
 	<comment></comment>
 	<projects>
+		<project>DHCP</project>
 		<project>inetmanet</project>
 	</projects>
 	<buildSpec>

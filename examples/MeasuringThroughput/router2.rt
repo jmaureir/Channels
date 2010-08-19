@@ -1,0 +1,10 @@
+ifconfig:
+name: eth0	inet_addr: 10.0.0.2	MTU: 1500	Metric: 1
+name: eth1	inet_addr: 192.168.1.1	MTU: 1500	Metric: 1
+ifconfigend.
+
+route:
+10.0.0.0	*	255.255.255.252	H	0	eth0
+192.168.1.0	*	255.255.255.0	H	0	eth1
+default:	*	0.0.0.0			G	0	eth0
+routeend.
