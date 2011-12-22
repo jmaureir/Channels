@@ -1,1 +1,3 @@
 package channels;
+
+@license(LGPL);
