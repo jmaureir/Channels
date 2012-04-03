@@ -45,6 +45,9 @@
  * PROBLEM: display only gets updated if there's traffic! (For example, a
  * high pk/sec value might stay displayed even when the link becomes idle!)
  */
+
+typedef std::map<const char*,cOutVector*> MeteringChannelsOutVector;
+
 class SIM_API MyThroughputMeteringChannel : public cDatarateChannel
 {
   protected:
@@ -70,7 +73,7 @@ class SIM_API MyThroughputMeteringChannel : public cDatarateChannel
     double currentBitPerSec;
     double currentPkPerSec;
 
-    std::map<const char*,cOutVector*> out_vectors;
+    MeteringChannelsOutVector out_vectors;
 
   protected:
     virtual void beginNewInterval(simtime_t now);

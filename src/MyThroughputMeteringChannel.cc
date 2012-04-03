@@ -35,6 +35,10 @@ MyThroughputMeteringChannel::MyThroughputMeteringChannel(const char *name) : cDa
 
 MyThroughputMeteringChannel::~MyThroughputMeteringChannel()
 {
+    for(MeteringChannelsOutVector::iterator it=this->out_vectors.begin();it!=this->out_vectors.end();it++) {
+        cOutVector* v = (*it).second;
+        delete(v);
+    }
 }
 
 bool MyThroughputMeteringChannel::initializeChannel(int stage) {
