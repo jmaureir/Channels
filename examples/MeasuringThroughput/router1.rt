@@ -4,7 +4,5 @@ name: eth1	inet_addr: 192.168.0.1	Mask: 255.255.255.0 MTU: 1500	Metric: 1
 ifconfigend.
 
 route:
-10.0.0.0	*	255.255.255.252	H	0	eth0
-192.168.0.0	*	255.255.255.0	H	0	eth1
-default:	*	0.0.0.0       	G	0	eth0
+default:	10.0.0.2	0.0.0.0	G	0	eth0
 routeend.
