@@ -49,6 +49,7 @@ bool MyThroughputMeteringChannel::initializeChannel(int stage) {
 	char buf[200];
 	char *p = buf;
 	std::stringstream n;
+
 	for (const char *fp = fmt; *fp && buf+200-p>20; fp++)
 	{
 		 n.str("");
@@ -56,42 +57,40 @@ bool MyThroughputMeteringChannel::initializeChannel(int stage) {
 		 {
 			 case 'N': // number of packets
 				 n << "Number of Packets from " << this->getSourceGate()->getOwnerModule()->getFullPath();
-				 this->out_vectors.insert(std::make_pair<const char*,cOutVector*> ("N",new cOutVector(n.str().c_str())));
-
+				 this->out_vectors.insert(std::make_pair("N",new cOutVector(n.str().c_str())));
 				 break;
 			 case 'V': // volume (in bytes)
 				 n << "Volume from " << this->getSourceGate()->getOwnerModule()->getFullPath();
-				 this->out_vectors.insert(std::make_pair<const char*,cOutVector*> ("V",new cOutVector(n.str().c_str())));
+				 this->out_vectors.insert(std::make_pair("V",new cOutVector(n.str().c_str())));
 				 break;
 			 case 'p': // current packet/sec
 				 n << "current packet/sec from " << this->getSourceGate()->getOwnerModule()->getFullPath();
-				 this->out_vectors.insert(std::make_pair<const char*,cOutVector*> ("p",new cOutVector(n.str().c_str())));
+				 this->out_vectors.insert(std::make_pair("p",new cOutVector(n.str().c_str())));
 				 break;
 			 case 'b': // current bandwidth
 				 n << "CurrentBandwidth from " << this->getSourceGate()->getOwnerModule()->getFullPath();
-				 this->out_vectors.insert(std::make_pair<const char*,cOutVector*> ("b",new cOutVector(n.str().c_str())));
+				 this->out_vectors.insert(std::make_pair("b",new cOutVector(n.str().c_str())));
 				 break;
 			 case 'u': // current channel utilization (%)
 				 n << "current channel utilization (%) from " << this->getSourceGate()->getOwnerModule()->getFullPath();
-				 this->out_vectors.insert(std::make_pair<const char*,cOutVector*> ("u",new cOutVector(n.str().c_str())));
+				 this->out_vectors.insert(std::make_pair("u",new cOutVector(n.str().c_str())));
 				 break;
 			 case 'P': // average packet/sec on [0,now)
 				 n << "average packet/sec from " << this->getSourceGate()->getOwnerModule()->getFullPath();
-				 this->out_vectors.insert(std::make_pair<const char*,cOutVector*> ("P",new cOutVector(n.str().c_str())));
+				 this->out_vectors.insert(std::make_pair("P",new cOutVector(n.str().c_str())));
 				 break;
 			 case 'B': // average bandwidth on [0,now)
 				 n << "AverageBandwidth from " << this->getSourceGate()->getOwnerModule()->getFullPath();
-				 this->out_vectors.insert(std::make_pair<const char*,cOutVector*> ("B",new cOutVector(n.str().c_str())));
+				 this->out_vectors.insert(std::make_pair("B",new cOutVector(n.str().c_str())));
 				 break;
 			 case 'U': // average channel utilization (%) on [0,now)
 				 n << "average channel utilization (%) from " << this->getSourceGate()->getOwnerModule()->getFullPath();
-				 this->out_vectors.insert(std::make_pair<const char*,cOutVector*> ("U",new cOutVector(n.str().c_str())));
+				 this->out_vectors.insert(std::make_pair("U",new cOutVector(n.str().c_str())));
 				 break;
 			 default:
 				 *p++ = *fp;
 		 }
 	}
-
 	return false;
 }
 #if OMNETPP_VERSION>0x0400

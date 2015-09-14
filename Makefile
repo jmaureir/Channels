@@ -1,23 +1,100 @@
-all: checkmakefiles
-	cd src && $(MAKE)
+#
+# OMNeT++/OMNEST Makefile for libChannels
+#
+# This file was generated with the command:
+#  opp_makemake -f --deep --make-so -O out -d src -X. -I/opt/intel/composer_xe_2013_sp1.0.080/mkl/include -I/opt/intel/composer_xe_2013_sp1.0.080/tbb/include -L/opt/intel/composer_xe_2013_sp1.0.080/compiler/lib/intel64 -L/opt/intel/composer_xe_2013_sp1.0.080/ipp/../compiler/lib/intel64 -L/opt/intel/composer_xe_2013_sp1.0.080/ipp/lib/intel64 -L/opt/intel/composer_xe_2013_sp1.0.080/mkl/lib/intel64 -L/opt/intel/composer_xe_2013_sp1.0.080/tbb/lib/intel64/gcc4.4 -L../inet/out/$$\(CONFIGNAME\)/src -L./out/$$\(CONFIGNAME\)/src -linet -DINET_IMPORT -KINET_PROJ=../inet
+#
 
-clean: checkmakefiles
-	cd src && $(MAKE) clean
+# Name of target to be created (-o option)
+TARGET = libChannels$(SHARED_LIB_SUFFIX)
 
-cleanall: checkmakefiles
-	cd src && $(MAKE) MODE=release clean
-	cd src && $(MAKE) MODE=debug clean
-	rm -f src/Makefile
+# Additional object and library files to link with
+EXTRA_OBJS =
 
-makefiles:
-	cd src && opp_makemake -f --deep
+# Additional libraries (-L, -l options)
+LIBS = -L/opt/intel/composer_xe_2013_sp1.0.080/compiler/lib/intel64 -L/opt/intel/composer_xe_2013_sp1.0.080/compiler/lib/intel64 -L/opt/intel/composer_xe_2013_sp1.0.080/ipp/lib/intel64 -L/opt/intel/composer_xe_2013_sp1.0.080/mkl/lib/intel64 -L/opt/intel/composer_xe_2013_sp1.0.080/tbb/lib/intel64/gcc4.4 -L../inet/out/$(CONFIGNAME)/src -Lout/$(CONFIGNAME)/src  -linet
+LIBS += -Wl,-rpath,`abspath /opt/intel/composer_xe_2013_sp1.0.080/compiler/lib/intel64` -Wl,-rpath,`abspath /opt/intel/composer_xe_2013_sp1.0.080/compiler/lib/intel64` -Wl,-rpath,`abspath /opt/intel/composer_xe_2013_sp1.0.080/ipp/lib/intel64` -Wl,-rpath,`abspath /opt/intel/composer_xe_2013_sp1.0.080/mkl/lib/intel64` -Wl,-rpath,`abspath /opt/intel/composer_xe_2013_sp1.0.080/tbb/lib/intel64/gcc4.4` -Wl,-rpath,`abspath ../inet/out/$(CONFIGNAME)/src` -Wl,-rpath,`abspath out/$(CONFIGNAME)/src`
 
-checkmakefiles:
-	@if [ ! -f src/Makefile ]; then \
-	echo; \
-	echo '======================================================================='; \
-	echo 'src/Makefile does not exist. Please use "make makefiles" to generate it!'; \
-	echo '======================================================================='; \
-	echo; \
-	exit 1; \
-	fi
+# Output directory
+PROJECT_OUTPUT_DIR = out
+PROJECTRELATIVE_PATH =
+O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
+
+# Other makefile variables (-K)
+INET_PROJ=../inet
+
+#------------------------------------------------------------------------------
+
+# Pull in OMNeT++ configuration (Makefile.inc or configuser.vc)
+
+ifneq ("$(OMNETPP_CONFIGFILE)","")
+CONFIGFILE = $(OMNETPP_CONFIGFILE)
+else
+ifneq ("$(OMNETPP_ROOT)","")
+CONFIGFILE = $(OMNETPP_ROOT)/Makefile.inc
+else
+CONFIGFILE = $(shell opp_configfilepath)
+endif
+endif
+
+ifeq ("$(wildcard $(CONFIGFILE))","")
+$(error Config file '$(CONFIGFILE)' does not exist -- add the OMNeT++ bin directory to the path so that opp_configfilepath can be found, or set the OMNETPP_CONFIGFILE variable to point to Makefile.inc)
+endif
+
+include $(CONFIGFILE)
+
+# Simulation kernel and user interface libraries
+OMNETPP_LIB_SUBDIR = $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
+OMNETPP_LIBS = -L"$(OMNETPP_LIB_SUBDIR)" -L"$(OMNETPP_LIB_DIR)" -loppenvir$D $(KERNEL_LIBS) $(SYS_LIBS)
+
+# we want to recompile everything if COPTS changes,
+# so we store COPTS into $COPTS_FILE and have object
+# files depend on it (except when "make depend" was called)
+COPTS_FILE = $O/.last-copts
+ifneq ($(MAKECMDGOALS),depend)
+ifneq ("$(COPTS)","$(shell cat $(COPTS_FILE) 2>/dev/null || echo '')")
+$(shell $(MKPATH) "$O" && echo "$(COPTS)" >$(COPTS_FILE))
+endif
+endif
+
+#------------------------------------------------------------------------------
+# User-supplied makefile fragment(s)
+# >>>
+# <<<
+#------------------------------------------------------------------------------
+
+# Main target
+all: $O/$(TARGET)
+	$(Q)$(LN) $O/$(TARGET) .
+
+$O/$(TARGET):  submakedirs $(wildcard $(EXTRA_OBJS)) Makefile
+	@$(MKPATH) $O
+	@echo Creating shared library: $@
+	$(Q)$(SHLIB_LD) -o $O/$(TARGET)   $(EXTRA_OBJS) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS)
+	$(Q)$(SHLIB_POSTPROCESS) $O/$(TARGET)
+
+submakedirs:  src_dir
+
+.PHONY: all clean cleanall depend msgheaders  src
+src: src_dir
+
+src_dir:
+	cd src && $(MAKE) all
+
+msgheaders:
+	$(Q)cd src && $(MAKE) msgheaders
+
+clean:
+	$(qecho) Cleaning...
+	$(Q)-rm -rf $O
+	$(Q)-rm -f Channels Channels.exe libChannels.so libChannels.a libChannels.dll libChannels.dylib
+
+	-$(Q)cd src && $(MAKE) clean
+
+cleanall: clean
+	$(Q)-rm -rf $(PROJECT_OUTPUT_DIR)
+
+depend:
+	$(qecho) Creating dependencies...
+	$(Q)-cd src && if [ -f Makefile ]; then $(MAKE) depend; fi
+

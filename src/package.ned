@@ -1,0 +1,3 @@
+package channels;
+
+@license(LGPL);

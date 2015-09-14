@@ -3,7 +3,6 @@
 	<name>Channels</name>
 	<comment></comment>
 	<projects>
-		<project>DHCP</project>
 		<project>inet</project>
 	</projects>
 	<buildSpec>

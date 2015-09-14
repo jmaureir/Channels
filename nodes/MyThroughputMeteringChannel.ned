@@ -19,4 +19,5 @@ channel MyThroughputMeteringChannel extends ned.DatarateChannel
 {
     @class(MyThroughputMeteringChannel);
     string format = default("b");
+    datarate = 1Gbps;
 }
